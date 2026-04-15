@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynasty 8 - Panel Officiel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #050505; color: #d1d5db; font-family: 'Inter', sans-serif; transition: 0.3s; }
+        .gta-card { background: #0f1012; border: 1px solid #1c1e22; border-radius: 10px; }
+        .input-gta { background: #16181b; border: 1px solid #282c31; color: white; padding: 12px; border-radius: 6px; width: 100%; outline: none; }
+        .input-gta:focus { border-color: #2454d1; }
+        .btn-blue { background: #2454d1; font-weight: bold; transition: 0.3s; }
+        .btn-blue:hover { background: #1a3fb3; }
+        .doc-item { background: #16181b; border: 1px solid #282c31; padding: 10px; border-radius: 8px; text-align: center; font-size: 10px; }
+        .big-mode { font-size: 1.25rem !important; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="loginPage" class="flex items-center justify-center min-h-screen">
+        <div class="gta-card p-10 w-full max-w-md shadow-2xl">
+            <div class="text-center mb-8">
+                <img src="https://i.imgur.com/4E7XyZq.png" class="w-20 mx-auto mb-4">
+                <h2 class="text-2xl font-bold uppercase italic text-white">Dynasty <span class="text-blue-600">8</span></h2>
+                <p class="text-gray-500 text-[10px] tracking-widest uppercase mt-2">Accès Restreint Personnel</p>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="idInput" class="input-gta text-center" placeholder="IDENTIFIANT">
+                <input type="password" id="passInput" class="input-gta text-center" placeholder="MOT DE PASSE">
+                <button onclick="handleLogin()" class="w-full btn-blue text-white py-4 rounded uppercase tracking-widest shadow-lg">Se connecter</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainSite" class="hidden p-4 md:p-8">
+        <header class="flex justify-between items-center mb-8 gta-card p-4 border-l-4 border-blue-600">
+            <div class="flex items-center gap-4">
+                <img src="https://i.imgur.com/4E7XyZq.png" class="w-10">
+                <div>
+                    <h1 id="navName" class="font-bold text-white text-lg">---</h1>
+                    <p id="navGrade" class="text-blue-500 text-[10px] font-black uppercase italic tracking-tighter">---</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="document.body.classList.toggle('big-mode')" class="bg-gray-800 p-2 rounded text-xs"><i class="fas fa-eye"></i></button>
+                <button id="adminBtn" onclick="toggleView('adminView')" class="hidden bg-yellow-600/20 text-yellow-500 border border-yellow-600/50 px-4 py-2 rounded text-xs font-bold uppercase tracking-widest">🛠️ Gestion</button>
+                <button onclick="toggleView('saleView')" class="bg-blue-600/20 text-blue-500 border border-blue-600/50 px-4 py-2 rounded text-xs font-bold uppercase tracking-widest">🏠 Ventes</button>
+                <button onclick="location.reload()" class="bg-red-900/20 text-red-500 border border-red-500/50 px-4 py-2 rounded text-[10px] font-bold uppercase italic">Déconnexion</button>
+            </div>
+        </header>
+
+        <div id="saleView" class="grid grid-cols-12 gap-6">
+            <div class="col-span-12 lg:col-span-7 space-y-6">
+                <div class="gta-card p-6">
+                    <h3 class="text-blue-500 font-bold uppercase text-xs mb-6 flex items-center gap-2"><i class="fas fa-user-circle"></i> Dossier Client</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="cNom" class="input-gta" placeholder="Nom Prénom Client">
+                        <input type="text" id="cTel" class="input-gta" value="555-">
+                    </div>
+                </div>
+                <div class="gta-card p-6">
+                    <h3 class="text-blue-500 font-bold uppercase text-xs mb-6 flex items-center gap-2"><i class="fas fa-home"></i> Détails du Bien</h3>
+                    <input type="text" id="bBien" class="input-gta mb-4" placeholder="Type de propriété / Entrepôt">
+                    <div class="grid grid-cols-3 gap-4">
+                        <select id="bType" class="input-gta"><option>Achat</option><option>Location</option></select>
+                        <input type="text" id="bSem" class="input-gta" placeholder="Durée (ex: 1s)">
+                        <input type="number" id="bPrix" class="input-gta text-green-500 font-bold" placeholder="Prix Total $">
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-12 lg:col-span-5 space-y-6">
+                <div class="gta-card p-6 text-center">
+                    <h3 class="text-blue-500 font-bold uppercase text-xs mb-4">Documents Requis</h3>
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <div class="doc-item"><i class="fas fa-camera mb-1"></i><br>Photo + CI</div>
+                        <div class="doc-item"><i class="fas fa-map-marker-alt mb-1"></i><br>GPS</div>
+                        <div class="doc-item"><i class="fas fa-car mb-1"></i><br>Garage</div>
+                    </div>
+                    <input type="url" id="bPhoto" class="input-gta text-xs mb-4" placeholder="Lien photo (ENTRÉE pour valider)">
+                    <button onclick="sendSale()" class="w-full btn-blue text-white py-4 rounded shadow-lg uppercase tracking-widest text-sm">Enregistrer la vente</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="adminView" class="hidden space-y-6">
+            <div class="gta-card p-6 border-yellow-600/30">
+                <h2 class="text-yellow-500 font-bold uppercase italic mb-6">Gestion des Effectifs & Accès</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-black/20 p-4 rounded border border-gray-800">
+                    <input type="text" id="adminId" class="input-gta" placeholder="ID Agent (ex: hda-silva)">
+                    <input type="text" id="adminPass" class="input-gta" placeholder="Mot de passe">
+                    <select id="adminGrade" class="input-gta">
+                        <option>Patron</option><option>Co-Patron</option><option>DRH</option>
+                        <option>Manager</option><option>Agent Expert</option><option>Agent</option>
+                        <option>Agent Novice</option><option>Stagiaire</option>
+                    </select>
+                    <button onclick="createAccount()" class="bg-green-600 text-white font-bold rounded uppercase text-xs">Créer l'accès</button>
+                </div>
+                <div class="mt-8">
+                    <h3 class="text-xs text-gray-500 font-bold uppercase mb-4">Liste des agents configurés</h3>
+                    <div id="agentList" class="space-y-2">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION WEBHOOK DISCORD
+        const WEBHOOK_URL = "TON_WEBHOOK_ICI";
+
+        // BASE DE DONNÉES DES COMPTES (AJOUTE TOI ICI)
+        let accounts = {
+            "owner": { mdp: "admin123", nom: "Direction Générale", grade: "Patron" },
+            "agent": { mdp: "d8pass", nom: "Hernando Da-silvia", grade: "Agent Novice" }
+        };
+
+        let loggedInUser = null;
+
+        function handleLogin() {
+            const id = document.getElementById('idInput').value;
+            const pass = document.getElementById('passInput').value;
+            if (accounts[id] && accounts[id].mdp === pass) {
+                loggedInUser = accounts[id];
+                startSite();
+            } else { alert("Accès refusé. Identifiants invalides."); }
+        }
+
+        function startSite() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('mainSite').classList.remove('hidden');
+            document.getElementById('navName').innerText = loggedInUser.nom;
+            document.getElementById('navGrade').innerText = loggedInUser.grade;
+            
+            // Check si gradé
+            const g = loggedInUser.grade;
+            if(["Patron", "Co-Patron", "DRH", "Manager"].includes(g)) {
+                document.getElementById('adminBtn').classList.remove('hidden');
+                updateAgentList();
+            }
+        }
+
+        function toggleView(viewId) {
+            document.getElementById('saleView').classList.add('hidden');
+            document.getElementById('adminView').classList.add('hidden');
+            document.getElementById(viewId).classList.remove('hidden');
+        }
+
+        function createAccount() {
+            const id = document.getElementById('adminId').value;
+            const pass = document.getElementById('adminPass').value;
+            const gr = document.getElementById('adminGrade').value;
+            if(id && pass) {
+                accounts[id] = { mdp: pass, nom: id, grade: gr };
+                alert("Compte créé avec succès !");
+                updateAgentList();
+            }
+        }
+
+        function updateAgentList() {
+            const list = document.getElementById('agentList');
+            list.innerHTML = "";
+            for (let id in accounts) {
+                list.innerHTML += `<div class="flex justify-between bg-[#16181b] p-3 rounded border border-gray-800 text-xs">
+                    <span>${accounts[id].nom} (${id})</span>
+                    <span class="text-blue-500 font-bold uppercase italic">${accounts[id].grade}</span>
+                </div>`;
+            }
+        }
+
+        function sendSale() {
+            const payload = {
+                username: "Dynasty 8 Registry",
+                avatar_url: "https://i.imgur.com/4E7XyZq.png",
+                embeds: [{
+                    title: "🏠 Nouvelle Transaction Immobilière",
+                    color: 2381009,
+                    fields: [
+                        { name: "👤 Client", value: document.getElementById('cNom').value, inline: true },
+                        { name: "📞 Contact", value: document.getElementById('cTel').value, inline: true },
+                        { name: "🏢 Bien", value: document.getElementById('bBien').value, inline: false },
+                        { name: "💰 Prix", value: document.getElementById('bPrix').value + " $", inline: true },
+                        { name: "📑 Type", value: document.getElementById('bType').value, inline: true }
+                    ],
+                    image: { url: document.getElementById('bPhoto').value },
+                    footer: { text: "Agent : " + loggedInUser.nom + " | Dynasty 8" }
+                }]
+            };
+
+            fetch(WEBHOOK_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) })
+            .then(() => { alert("Vente envoyée sur Discord !"); location.reload(); })
+            .catch(() => alert("Erreur Webhook !"));
+        }
+
+        // Touche Entrée sur le lien photo
+        document.getElementById('bPhoto').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendSale(); });
+    </script>
+</body>
+</html>
