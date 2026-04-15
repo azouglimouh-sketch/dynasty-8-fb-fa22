@@ -10,7 +10,7 @@
         .gta-card { background: #0f1012; border: 1px solid #1c1e22; border-radius: 10px; }
         .input-gta { background: #16181b; border: 1px solid #282c31; color: white; padding: 12px; border-radius: 6px; width: 100%; outline: none; }
         .btn-blue { background: #2454d1; font-weight: bold; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -30,7 +30,7 @@
     </div>
 
     <div id="mainSite" class="hidden p-4 md:p-8">
-        <header class="flex justify-between items-center mb-8 gta-card p-4">
+        <header class="flex justify-between items-center mb-8 gta-card p-4 border-l-4 border-blue-600">
             <div class="flex items-center gap-4">
                 <img src="https://i.imgur.com/4E7XyZq.png" class="w-10">
                 <div>
@@ -51,58 +51,50 @@
                 <input type="text" class="input-gta mb-4" placeholder="Nom Prénom">
                 <input type="text" class="input-gta" value="555-">
             </div>
-            <div class="gta-card p-6">
+            <div class="gta-card p-6 text-center">
                 <h3 class="text-blue-500 font-bold uppercase text-xs mb-4">Validation</h3>
+                <p class="text-gray-500 text-sm mb-4 italic">Remplissez les infos pour envoyer au Discord</p>
                 <button class="w-full btn-blue text-white py-4 rounded uppercase">Enregistrer la vente</button>
             </div>
         </div>
 
         <div id="adminView" class="hidden gta-card p-6">
-            <h2 class="text-yellow-500 font-bold uppercase mb-6">Ajouter un Agent (Définitif)</h2>
-            <p class="text-xs text-gray-500 mb-4 italic text-red-400">Note: Pour que l'agent reste même après F5, tu dois l'écrire dans le code (ligne 105) sur GitHub.</p>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <h2 class="text-yellow-500 font-bold uppercase mb-6 italic">Panel de Direction</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <input type="text" id="adminId" class="input-gta" placeholder="ID">
                 <input type="text" id="adminPass" class="input-gta" placeholder="MDP">
                 <select id="adminGrade" class="input-gta">
                     <option>Patron</option><option>DRH</option><option>RH</option>
                     <option>Manager</option><option>Agent Expert</option><option>Agent</option>
-                    <option>Agent Novice</option><option>Stagiaire</option>
                 </select>
-                <button onclick="createAccount()" class="bg-green-600 text-white font-bold rounded">Ajouter temporairement</button>
+                <button onclick="createAccount()" class="bg-green-600 text-white font-bold rounded">Créer Accès</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. LISTE DES COMPTES (MODIFIE ICI POUR LE RENDRE DÉFINITIF)
-        // Ajoute tes agents ici entre les { } pour qu'ils ne disparaissent plus jamais
+        // --- LA LISTE DES COMPTES EST ICI ---
         let accounts = {
             "owner": { mdp: "admin123", nom: "Direction", grade: "Patron" },
-            "rh_user": { mdp: "rh2026", nom: "Responsable RH", grade: "RH" } // Exemple de compte RH
+            "Mariano Ramirez": { mdp: "123456789", nom: "Mariano Ramirez", grade: "RH" }
         };
 
-        // Charger les comptes créés via le bouton (sauvegarde locale dans le navigateur)
-        const savedAccounts = localStorage.getItem('d8_accounts');
-        if (savedAccounts) {
-            accounts = {...accounts, ...JSON.parse(savedAccounts)};
-        }
+        const saved = localStorage.getItem('d8_accounts');
+        if (saved) { accounts = JSON.parse(saved); }
 
-        // Rester connecté après actualisation
         window.onload = function() {
-            const savedUser = localStorage.getItem('d8_logged_user');
-            if (savedUser && accounts[savedUser]) {
-                startSite(accounts[savedUser]);
-            }
+            const user = localStorage.getItem('d8_logged_user');
+            if (user && accounts[user]) { startSite(accounts[user]); }
         };
 
         function handleLogin() {
-            const id = document.getElementById('idInput').value;
-            const pass = document.getElementById('passInput').value;
-            if (accounts[id] && accounts[id].mdp === pass) {
-                localStorage.setItem('d8_logged_user', id); // Sauvegarde la session
-                startSite(accounts[id]);
+            const u = document.getElementById('idInput').value;
+            const p = document.getElementById('passInput').value;
+            if (accounts[u] && accounts[u].mdp === p) {
+                localStorage.setItem('d8_logged_user', u);
+                startSite(accounts[u]);
             } else { alert("Identifiants incorrects"); }
-        }"Mariano Ramirez": { mdp: "123456789", nom: "Mariano Ramirez", grade: "RH" },
+        }
 
         function startSite(user) {
             document.getElementById('loginPage').classList.add('hidden');
@@ -121,8 +113,9 @@
             const gr = document.getElementById('adminGrade').value;
             if(id && pass) {
                 accounts[id] = { mdp: pass, nom: id, grade: gr };
-                localStorage.setItem('d8_accounts', JSON.stringify(accounts)); // Sauvegarde dans le navigateur
-                alert("Agent ajouté ! Il pourra se connecter sur ce PC. Pour les autres, modifie le code GitHub.");
+                localStorage.setItem('d8_accounts', JSON.stringify(accounts));
+                alert("Compte ajouté sur ce navigateur !");
+                location.reload();
             }
         }
 
