@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynasty 8 - Connexion Sécurisée</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #050505; color: #d1d5db; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .login-card { background: #0f1012; border: 1px solid #1c1e22; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .input-gta { background-color: #16181b; border: 1px solid #282c31; color: white; padding: 12px; border-radius: 5px; width: 100%; outline: none; transition: 0.3s; }
+        .input-gta:focus { border-color: #2454d1; }
+        .hidden { display: none; }
+        .admin-panel { background: rgba(36, 84, 209, 0.1); border: 1px solid #2454d1; border-radius: 8px; padding: 15px; }
+    </style>
+</head>
+<body>
+
+    <div id="loginPage" class="flex flex-col items-center justify-center min-h-screen">
+        <div class="login-card p-10 w-full max-w-md">
+            <div class="text-center mb-8">
+                <img src="https://i.imgur.com/4E7XyZq.png" class="w-24 mx-auto mb-4">
+                <h2 class="text-2xl font-bold uppercase italic text-white">Dynasty <span class="text-blue-600">8</span></h2>
+                <p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">Accès Restreint - Personnel Uniquement</p>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="loginUser" class="input-gta" placeholder="Identifiant">
+                <input type="password" id="loginPass" class="input-gta" placeholder="Mot de passe">
+                <button onclick="attemptLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded transition uppercase text-sm">Se connecter</button>
+            </div>
+            <p id="loginError" class="text-red-500 text-xs mt-4 text-center hidden italic">Identifiants incorrects ou compte inactif.</p>
+        </div>
+    </div>
+
+    <div id="mainSite" class="hidden p-4">
+        <header class="flex justify-between items-center mb-6 bg-[#0f1012] p-4 rounded-lg border border-[#1c1e22]">
+            <div class="flex items-center gap-4">
+                <img src="https://i.imgur.com/4E7XyZq.png" class="w-10">
+                <div>
+                    <h1 id="userDisplayName" class="font-bold text-lg leading-tight uppercase">Nom Agent</h1>
+                    <p id="userDisplayGrade" class="text-[10px] text-blue-400 font-bold uppercase italic">Grade</p>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <div id="adminLink" class="hidden">
+                    <button onclick="toggleAdmin()" class="bg-yellow-600/20 text-yellow-500 border border-yellow-600/50 px-4 py-2 rounded text-xs font-bold uppercase">🛠️ Panel Direction</button>
+                </div>
+                <button onclick="logout()" class="bg-red-900/20 text-red-500 border border-red-500/50 px-4 py-2 rounded text-xs font-bold uppercase">Déconnexion</button>
+            </div>
+        </header>
+
+        <div id="adminSection" class="hidden mb-6 admin-panel">
+            <h3 class="font-bold mb-4 text-yellow-500 uppercase text-sm">Gestion des effectifs (Direction / RH)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <input type="text" id="newUserId" class="input-gta text-xs" placeholder="Nouvel ID">
+                <input type="text" id="newUserPass" class="input-gta text-xs" placeholder="MDP">
+                <select id="newUserGrade" class="input-gta text-xs">
+                    <option value="Agent Novice">Agent Novice</option>
+                    <option value="Agent">Agent</option>
+                    <option value="Agent Expert">Agent Expert</option>
+                    <option value="DRH">DRH</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Patron">Patron (Owner)</option>
+                </select>
+                <button onclick="createUser()" class="bg-green-600 text-white rounded font-bold text-xs uppercase">Créer le compte</button>
+            </div>
+        </div>
+
+        <div class="text-center p-20 border border-dashed border-gray-800 rounded">
+            <h2 class="text-2xl font-bold">Bienvenue sur le Panel Dynasty 8</h2>
+            <p class="text-gray-500">Formulaire de transaction chargé avec succès.</p>
+        </div>
+    </div>
+
+    <script>
+        // BASE DE DONNÉES (À MODIFIER ICI POUR LES PREMIERS ACCÈS)
+        let accounts = {
+            "owner": { mdp: "admin123", nom: "Direction Générale", grade: "Patron", access: "owner" },
+            "agent1": { mdp: "d8pass", nom: "Hernando Da-silvia", grade: "Agent Novice", access: "user" }
+        };
+
+        function attemptLogin() {
+            const user = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
+
+            if (accounts[user] && accounts[user].mdp === pass) {
+                showSite(user);
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        function showSite(userId) {
+            const user = accounts[userId];
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('mainSite').classList.remove('hidden');
+            
+            document.getElementById('userDisplayName').innerText = user.nom;
+            document.getElementById('userDisplayGrade').innerText = user.grade;
+
+            // Afficher le bouton Admin si Patron ou DRH
+            if(user.grade === "Patron" || user.grade === "DRH" || user.access === "owner") {
+                document.getElementById('adminLink').classList.remove('hidden');
+            }
+        }
+
+        function toggleAdmin() {
+            const sect = document.getElementById('adminSection');
+            sect.classList.toggle('hidden');
+        }
+
+        function createUser() {
+            const id = document.getElementById('newUserId').value;
+            const mdp = document.getElementById('newUserPass').value;
+            const grade = document.getElementById('newUserGrade').value;
+            
+            if(id && mdp) {
+                accounts[id] = { mdp: mdp, nom: id, grade: grade, access: "user" };
+                alert("Compte créé pour : " + id + " avec le grade " + grade);
+            }
+        }
+
+        function logout() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
